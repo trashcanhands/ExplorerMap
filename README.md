@@ -19,4 +19,4 @@ Speak to a Quest Giver and select a quest (to view the Quest Text) to create a '
 *Abandoning an Active Quest will return the quest back to the '!' icon tooltip's Available Quests and reverting the icon back to a gold color.
 
 
-Upon completion of all Active Quests from a Quest Giver, the '!' icon will then be removed from your World Map.
+Upon completion of all Active Quests from a Quest Giver (that has no remaining Available Quests listed), the '!' icon will then be removed from your World Map.
