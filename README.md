@@ -23,8 +23,8 @@ Use the [GitHub Addon Manager](https://turtle-wow.fandom.com/wiki/GitAddonsManag
 
 To use either of these methods: 
  * Using the ![gitcodebutton](https://imgur.com/C79XiBN.png) button, copy the .git link
-  * If using GitHub Addon Manager, press the **+** button, paste the .git link and click **OK**
-  * If using TurtleWOW's launcher, click the  **+ Add new addon** button, paste the .git link into the box and click **Install**
+   * If using GitHub Addon Manager, press the **+** button, paste the .git link and click **OK**
+   * If using TurtleWOW's launcher, click the  **+ Add new addon** button, paste the .git link into the box and click **Install**
 
 ***Manual:***
  1. Download the .zip file using the ![gitcodebutton](https://imgur.com/C79XiBN.png) button above
