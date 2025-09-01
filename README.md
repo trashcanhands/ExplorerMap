@@ -19,6 +19,8 @@ the NPC's name, location, and Available Quests, which will include the selected 
 Upon completion of all Active Quests from a Quest Giver (that has no remaining Available Quests listed), the '!' icon will then be removed from your World Map.
 
 =====INSTALLATION=====
+Use the [GitHub Addon Manager](https://turtle-wow.fandom.com/wiki/GitAddonsManager)
 
+Manual:
 Download the .zip file using the green |<> CODE v| button. Extract the .zip file then remove the -master from extracted ExplorerMap-master folder then copy the ExplorerMap
 folder to your game's Interface/Addons folder.
