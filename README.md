@@ -23,5 +23,5 @@ Use the [GitHub Addon Manager](https://turtle-wow.fandom.com/wiki/GitAddonsManag
 
 Manual:<br>
  1. Download the .zip file using the ![gitcodebutton](https://imgur.com/C79XiBN.png) button above
- 2. Extract the .zip file then remove the -master from extracted ExplorerMap-master folder
- 3. Copy the ExplorerMap folder to your game's Interface/Addons folder.
+ 2. Extract the .zip file somewhere, then remove the -master from the extracted ExplorerMap-master folder
+ 3. Copy this ExplorerMap folder to your game's Interface/Addons directory.
