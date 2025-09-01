@@ -2,7 +2,8 @@
 Explorer's Map addon for TurtleWOW
 
 
-Explorer's Map is a TurtleWOW quest marker add-on alternative to ones like pfUIQuest, that will automatically add all markers of any chosen type.
+Explorer's Map is a TurtleWOW quest marker add-on alternative to ones like pfUIQuest that automatically add all markers of any chosen type.
+
 This add-on is all about the spirit of exploration while still allowing players a way to keep track of Quest Givers (and their quest offerings).
 
 =====INSTRUCTIONS=====
