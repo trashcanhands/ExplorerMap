@@ -20,7 +20,9 @@ Upon completion of all Active Quests from a Quest Giver (that has no remaining A
 
 ## INSTALLATION<br>
 
-Use the [GitHub Addon Manager](https://turtle-wow.fandom.com/wiki/GitAddonsManager)
+**Recommended:
+Use the [GitHub Addon Manager](https://turtle-wow.fandom.com/wiki/GitAddonsManager)<br>
+or the TurtleWOW Launcher **+Add New Addon button
 
 Manual:<br>
  1. Download the .zip file using the ![gitcodebutton](https://imgur.com/C79XiBN.png) button above
