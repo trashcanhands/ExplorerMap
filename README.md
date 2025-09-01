@@ -1,4 +1,4 @@
-# explorersmap
+# ExplorerMap
 Explorer's Map addon for TurtleWOW
 
 
