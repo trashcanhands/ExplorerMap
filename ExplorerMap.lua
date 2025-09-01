@@ -171,12 +171,11 @@ local function CreateMapIcon(npc)
 end
 
 local function UpdateMapIcons()
-    local zone = GetRealZoneText()
-    local continent = GetCurrentMapContinent()
-    local zoneID = GetCurrentMapZone()
+    local currentContinent = GetCurrentMapContinent()
+    local currentZoneID = GetCurrentMapZone()
     
     -- Only show icons when zoomed into a specific zone, not continent view
-    if not zoneID or zoneID == 0 then
+    if not currentZoneID or currentZoneID == 0 then
         -- We're at continent level, hide all icons
         for _, icon in ipairs(ExplorerMap.mapIcons) do
             icon:Hide()
@@ -190,10 +189,15 @@ local function UpdateMapIcons()
     end
     ExplorerMap.mapIcons = {}
 
-    if not ExplorerMap.db[zone] then return end
-    for _, npc in pairs(ExplorerMap.db[zone]) do
-        local icon = CreateMapIcon(npc)
-        if icon then table.insert(ExplorerMap.mapIcons, icon) end
+    -- Check all zones and find NPCs that match the currently viewed map zone
+    for zoneName, npcs in pairs(ExplorerMap.db) do
+        for _, npc in pairs(npcs) do
+            -- Show NPCs that match the currently displayed map's continent and zone
+            if npc.continent == currentContinent and npc.zoneID == currentZoneID then
+                local icon = CreateMapIcon(npc)
+                if icon then table.insert(ExplorerMap.mapIcons, icon) end
+            end
+        end
     end
 end
 
@@ -350,5 +354,6 @@ SlashCmdList["EXPLORER"] = function(msg)
         DEFAULT_CHAT_FRAME:AddMessage("/explorer clear - Clear all data")
     end
 end
+
 
 DEFAULT_CHAT_FRAME:AddMessage("ExplorerMap: Addon loaded!")
