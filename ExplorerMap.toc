@@ -1,0 +1,8 @@
+## Interface: 11200
+## Title: Explorer Map
+## Notes: Tracks quest givers as you discover them
+## Author: trashcanhands
+## Version: 1.0.0
+## SavedVariables: ExplorerMapDB
+
+ExplorerMap.lua
