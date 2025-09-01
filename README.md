@@ -8,7 +8,8 @@ This add-on is all about the spirit of exploration while still allowing players 
 
 =====INSTRUCTIONS=====
 
-Speak to a Quest Giver and select a quest (to view the Quest Text) to create a '!' icon on your World Map with a tooltip indicating the NPC's name, location, and Available Quests, which will include the selected quest.
+Speak to a Quest Giver and select a quest (to view the Quest Text) to create a '!' icon on your World Map with a tooltip indicating
+the NPC's name, location, and Available Quests, which will include the selected quest.
 
 *Selecting available quests from an NPC this way will add each one to the '!' icon tooltip.
 *ACCEPTING an available quest will move the quest from the '!' icon tooltip's Available Quests to Active Quests.
@@ -16,3 +17,8 @@ Speak to a Quest Giver and select a quest (to view the Quest Text) to create a '
 *Abandoning an Active Quest will return the quest back to the '!' icon tooltip's Available Quests and reverting the icon back to a gold color.
 
 Upon completion of all Active Quests from a Quest Giver (that has no remaining Available Quests listed), the '!' icon will then be removed from your World Map.
+
+=====INSTALLATION=====
+
+Download the .zip file using the <CODE> button. Extract the .zip file then remove the -master from extracted ExplorerMap-master folder then copy the ExplorerMap
+folder to your game's Interface/Addons folder.
