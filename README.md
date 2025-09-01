@@ -8,7 +8,7 @@ This add-on is all about the spirit of exploration while still allowing players 
 
 ## INSTRUCTIONS:<br>
 
-Speak to a Quest Giver and select a quest (to view the Quest Text) to create a '''**!**''' icon on your World Map with a tooltip indicating
+Speak to a Quest Giver and select a quest (to view the Quest Text) to create a '**!**' icon on your World Map with a tooltip indicating
 the NPC's name, location, and Available Quests, which will include the selected quest.
 
   * _Selecting_ available quests from an NPC this way will add each one to the # **!** icon tooltip.
