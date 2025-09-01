@@ -21,6 +21,6 @@ Upon completion of all Active Quests from a Quest Giver (that has no remaining A
 =====INSTALLATION=====<br>
 Use the [GitHub Addon Manager](https://turtle-wow.fandom.com/wiki/GitAddonsManager)
 
-Manual:
+Manual:<br>
 Download the .zip file using the green |<> CODE v| button. Extract the .zip file then remove the -master from extracted ExplorerMap-master folder then copy the ExplorerMap
 folder to your game's Interface/Addons folder.
