@@ -23,6 +23,7 @@ Upon completion of all Active Quests from a Quest Giver (that has no remaining A
 * **clear:** ***Removes ALL quest givers from database!***  
 ### INSTALLATION:  
 ***Recommended:***  
+
 Use the [GitHub Addon Manager](https://turtle-wow.fandom.com/wiki/GitAddonsManager) or the TurtleWOW Official Launcher  
 To use either of these methods:  
  * Using the ![gitcodebutton](https://imgur.com/C79XiBN.png) button, copy the .git link
