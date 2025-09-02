@@ -6,5 +6,6 @@
 ## SavedVariables: ExplorerMapDB
 
 
-ExplorerMap.lua
+ExplorerMap.xml
+
 
