@@ -2,8 +2,8 @@
 Explorer's Map is a TurtleWOW quest marker add-on alternative to ones like pfUIQuest that automatically add all markers of any chosen type.  
 This add-on is all about the spirit of exploration while still allowing players a way to keep track of Quest Givers (and their quest offerings).  
 ### INSTRUCTIONS:  
-Speak to a Quest Giver and select a quest (to view the Quest Text) to create a  
-![questmarker](https://imgur.com/YhBNLOz.png) icon on your World Map with a tooltip showing  
+Speak to a Quest Giver and select a quest (to view the Quest Text) to create a ![questmarker](https://imgur.com/YhBNLOz.png)  
+icon on your World Map with a tooltip showing  
 the NPC's name, location, and Available Quests, which will include the selected quest.
   * _Selecting_ available quests from an NPC this way will add each one to the  
   ![questmarker](https://imgur.com/YhBNLOz.png) icon tooltip.
