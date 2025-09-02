@@ -4,10 +4,10 @@ This add-on is all about the spirit of exploration while still allowing players 
 ### INSTRUCTIONS:  
 Speak to a Quest Giver and select a quest (to view the Quest Text) to create a ![questmarker](https://imgur.com/YhBNLOz.png) icon on your World Map with a tooltip showing the NPC's name, location, and Available Quests, which will include the selected quest.
 
-_Selecting_ available quests from an NPC this way will add each one to the ![questmarker](https://imgur.com/YhBNLOz.png) icon tooltip. \
-_Accepting_ an available quest will move the quest from the ![questmarker](https://imgur.com/YhBNLOz.png) icon tooltip's Available Quests to Active Quests. \
-_Accepting_ all available quests from a Quest Giver will change the ![questmarker](https://imgur.com/YhBNLOz.png) from gold color to red, to signify at a glance that all of the quests from that Quest Giver have been accepted. \
-_Abandoning_ an Active Quest will return the quest back to the ![questmarker](https://imgur.com/YhBNLOz.png) icon tooltip's Available Quests and reverting the icon back to a gold color.
+***Selecting*** available quests from an NPC this way will add each one to the ![questmarker](https://imgur.com/YhBNLOz.png) icon tooltip. \
+***Accepting*** an available quest will move the quest from the ![questmarker](https://imgur.com/YhBNLOz.png) icon tooltip's Available Quests to Active Quests. \
+***Accepting*** all available quests from a Quest Giver will change the ![questmarker](https://imgur.com/YhBNLOz.png) from gold color to red, to signify at a glance that all of the quests from that Quest Giver have been accepted. \
+***Abandoning*** an Active Quest will return the quest back to the ![questmarker](https://imgur.com/YhBNLOz.png) icon tooltip's Available Quests and reverting the icon back to a gold color.
 
 Upon completion of all Active Quests from a Quest Giver (that has no remaining Available Quests listed), ![questmarker](https://imgur.com/YhBNLOz.png) icon will then be removed from your World Map.
 ### COMMANDS:  
