@@ -5,14 +5,16 @@ This add-on is all about the spirit of exploration while still allowing players 
 ## INSTRUCTIONS
 <img align="center" src="https://imgur.com/XnQAWPD.png">
 
-Upon completion of all Active Quests from a Quest Giver (that has no remaining Available Quests listed), ![questmarker](https://imgur.com/YhBNLOz.png) icon will then be removed from your World Map.
+Upon completion of all Active Quests from a Quest Giver (that has no remaining Available Quests listed), the quest marker icon will then be removed from your World Map.
 
 ## COMMANDS
-Use /explorer or /exp \
-/explorer gui - Open the Quest Givers window--same as the minimap button \
-/explorer refresh - Refreshes map's quest givers from database--for manual updating if needed \
-/explorer clean - Removes all quest givers from database with no available, active or completed quests \
+You can use either **/explorer** or **/exp** to execute commands
+```
+/explorer gui - Open the Quest Givers window--same as the minimap button
+/explorer refresh - Refreshes map's quest givers from database--for manual updating if needed
+/explorer clean - Removes all quest givers from database with no available, active or completed quests
 /explorer clear - ***Removes ALL quest givers from database!***
+```
 
 ## INSTALLATION
 
