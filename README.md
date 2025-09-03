@@ -1,5 +1,6 @@
 # Explorer's Map
 Explorer's Map is a quest marker add-on alternative for vanilla World of Warcraft
+
 This add-on is all about embracing exploration while still allowing players a way to keep track of Quest Givers (and their quest offerings)
 
 ## INSTRUCTIONS
@@ -20,13 +21,10 @@ You can use either **/explorer** or **/exp** to execute commands
 
 ### Recommended
 
-Use the [GitHub Addon Manager](https://turtle-wow.fandom.com/wiki/GitAddonsManager) or the TurtleWOW Official Launcher  
-To use either of these methods:  
- * Using the ![gitcodebutton](https://imgur.com/C79XiBN.png) button, copy the .git link
-   * If using GitHub Addon Manager, press the **+** button, paste the .git link and click **OK**
-   * If using TurtleWOW's launcher, click the  **+ Add new addon** button, paste the .git link into the box and click **Install**
+Use the [GitHub Addon Manager](https://turtle-wow.fandom.com/wiki/GitAddonsManager)
+1.  Press the **+** button, paste the .git link and click **OK**
 
 ### Manual
- 1. Download the .zip file using the ![gitcodebutton](https://imgur.com/C79XiBN.png) button above
- 2. Extract the .zip file somewhere, then remove the -master from the extracted ExplorerMap-master folder filename
- 3. Copy this ExplorerMap folder to /Path/To/WOW/Interface/AddOns directory
+1. Download the .zip file using the ![gitcodebutton](https://imgur.com/C79XiBN.png) button above
+2. Extract the .zip file somewhere, then remove the -master from the extracted ExplorerMap-master folder filename
+3. Copy this ExplorerMap folder to /Path/To/WOW/Interface/AddOns directory
