@@ -11,9 +11,11 @@ Upon completion of all Active Quests from a Quest Giver (that has no remaining A
 You can use either **/explorer** or **/exp** to execute commands
 ```
 /explorer gui - Open the Quest Givers window--same as the minimap button
-/explorer refresh - Refreshes map's quest givers from database--for manual updating if needed
-/explorer clean - Removes all quest givers from database with no available, active or completed quests
-/explorer clear - ***Removes ALL quest givers from database!***
+/explorer refresh - Refreshes map's quest givers from database
+for manual updating if needed
+/explorer clean - Removes all quest givers from database with no available,
+active or completed quests
+/explorer clear - *Removes ALL quest givers from database!*
 ```
 
 ## INSTALLATION
