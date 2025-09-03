@@ -20,7 +20,7 @@ You can use either **/explorer** or **/exp** to execute commands
 ## INSTALLATION
 
 ### Recommended
-Use the [GitHub Addon Manager](https://turtle-wow.fandom.com/wiki/GitAddonsManager)
+Use the [GitHub Addon Manager](https://gitlab.com/woblight/GitAddonsManager/-/jobs/artifacts/master/download?job=Win64)
 1. Press the **+** button, paste the .git link and click **OK**
 
 ### Manual
