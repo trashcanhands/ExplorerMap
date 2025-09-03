@@ -35,8 +35,23 @@ end
 ---------------------------------------------------
 local function CreateNPCIfNeeded(npcName, x, y, zone, subzone)
     if not ExplorerMap.db[zone] then ExplorerMap.db[zone] = {} end
-    local npcKey = npcName.."_"..math.floor(x*10000).."_"..math.floor(y*10000)
+    
+    local roundedX = math.floor(x*100)
+    local roundedY = math.floor(y*100)
+    local npcKey = npcName.."_"..roundedX.."_"..roundedY
+    
     if not ExplorerMap.db[zone][npcKey] then
+        for existingKey, existingNPC in pairs(ExplorerMap.db[zone]) do
+            if existingNPC.name == npcName then
+                local existingRoundedX = math.floor(existingNPC.x*100)
+                local existingRoundedY = math.floor(existingNPC.y*100)
+                local distance = math.abs(roundedX - existingRoundedX) + math.abs(roundedY - existingRoundedY)
+                if distance <= 2 then
+                    return existingNPC
+                end
+            end
+        end
+        
         local continent = GetCurrentMapContinent()
         local zoneID = GetCurrentMapZone()
         ExplorerMap.db[zone][npcKey] = {
@@ -432,9 +447,10 @@ local function UpdateGUIContent()
     ExplorerMapGUI.scrollFrame:UpdateScrollChildRect()
     
     -- Reset scroll position to top if content is shorter than the frame
-    if contentHeight <= ExplorerMapGUI.scrollFrame:GetHeight() then
-        ExplorerMapGUIScrollFrameScrollBar:SetValue(0)
-    end
+local scrollBar = getglobal(ExplorerMapGUI.scrollFrame:GetName().."ScrollBar")
+if scrollBar and contentHeight <= ExplorerMapGUI.scrollFrame:GetHeight() then
+    scrollBar:SetValue(0)
+end
 end
 
 function ToggleGUI()
@@ -637,4 +653,5 @@ SlashCmdList["EXPLORER"] = function(msg)
         DEFAULT_CHAT_FRAME:AddMessage("/explorer clean - Remove NPCs with no quests")
     end
 end
+
 
