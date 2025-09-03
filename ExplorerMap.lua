@@ -320,6 +320,8 @@ local function UpdateGUIContent()
         active = {r=0.7, g=1, b=0.7}
     }
     
+    -- ... all your existing content creation code stays the same ...
+    
     for zoneName, npcs in pairs(ExplorerMap.db) do
         if zoneName and zoneName ~= "" then
             local zoneHasQuests = false
@@ -422,7 +424,17 @@ local function UpdateGUIContent()
         end
     end
     
-    ExplorerMapGUI.content:SetHeight(math.abs(yPos) + 30)
+    -- Set the content height
+    local contentHeight = math.abs(yPos) + 30
+    ExplorerMapGUI.content:SetHeight(contentHeight)
+    
+    -- CRITICAL: Update the scroll frame after changing content
+    ExplorerMapGUI.scrollFrame:UpdateScrollChildRect()
+    
+    -- Reset scroll position to top if content is shorter than the frame
+    if contentHeight <= ExplorerMapGUI.scrollFrame:GetHeight() then
+        ExplorerMapGUIScrollFrameScrollBar:SetValue(0)
+    end
 end
 
 function ToggleGUI()
@@ -625,3 +637,4 @@ SlashCmdList["EXPLORER"] = function(msg)
         DEFAULT_CHAT_FRAME:AddMessage("/explorer clean - Remove NPCs with no quests")
     end
 end
+
