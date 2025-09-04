@@ -24,6 +24,6 @@ Use the [GitHub Addon Manager](https://gitlab.com/woblight/GitAddonsManager/-/jo
 1. Press the **+** button, paste the .git link and click **OK**
 
 ### Manual
-1. Download the .zip file using the ![gitcodebutton](https://imgur.com/C79XiBN.png) button above
+1. Download the .zip file using ![gitcodebutton](https://imgur.com/C79XiBN.png)
 2. Extract the .zip file somewhere, then remove the -master from the extracted ExplorerMap-master folder filename
 3. Copy this ExplorerMap folder to /Path/To/WOW/Interface/AddOns directory
