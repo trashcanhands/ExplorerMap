@@ -247,52 +247,6 @@ local function SaveGUIState()
     end
 end
 
-local function CreateGUI()
-    if ExplorerMapGUI.frame then return end
-    
-    local frame = CreateFrame("Frame", "ExplorerMapGUIFrame", UIParent)
-    frame:SetWidth(450)
-    frame:SetHeight(400)
-    frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-    frame:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-        tile = true, tileSize = 32, edgeSize = 32,
-        insets = { left = 8, right = 8, top = 8, bottom = 8 }
-    })
-    frame:SetBackdropColor(0, 0, 0, 1)
-    frame:EnableMouse(true)
-    frame:SetMovable(true)
-    frame:RegisterForDrag("LeftButton")
-    frame:SetScript("OnDragStart", function() this:StartMoving() end)
-    frame:SetScript("OnDragStop", function() this:StopMovingOrSizing() end)
-	
-	table.insert(UISpecialFrames, "ExplorerMapGUIFrame") --close on esc
-    
-    local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    title:SetPoint("TOP", frame, "TOP", 0, -15)
-    title:SetText("Explorer's Map - Quest Givers")
-    
-    local closeBtn = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
-    closeBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -5, -5)
-    closeBtn:SetScript("OnClick", function() ToggleGUI() end)
-    
-    local scrollFrame = CreateFrame("ScrollFrame", "ExplorerMapScrollFrame", frame, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 15, -40)
-    scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -35, 15)
-    
-    local content = CreateFrame("Frame", "ExplorerMapContent", scrollFrame)
-    content:SetWidth(400)
-    content:SetHeight(1)
-    scrollFrame:SetScrollChild(content)
-    
-    ExplorerMapGUI.frame = frame
-    ExplorerMapGUI.content = content
-    ExplorerMapGUI.scrollFrame = scrollFrame
-    
-    frame:Hide()
-end
-
 local function ClearGUIContent()
     for _, element in ipairs(ExplorerMapGUI.uiElements) do
         if element.Hide then
@@ -323,7 +277,7 @@ local function CreateClickableText(parent, text, x, y, color, onClick)
     end
     
     button:SetScript("OnEnter", function()
-        fontString:SetTextColor(1, 1, 1)
+        fontString:SetTextColor(0.9, 0.7, 1)
     end)
     button:SetScript("OnLeave", function()
         fontString:SetTextColor(color.r, color.g, color.b)
@@ -350,12 +304,12 @@ local function UpdateGUIContent()
     local yPos = -10
     local lineHeight = 18
     local colors = {
-        zone = {r=0.7, g=0.7, b=0.7},
-        subzone = {r=0.6, g=0.8, b=0.6},
+        zone = {r=0, g=0, b=0.8},
+        subzone = {r=0.5, g=0.5, b=1},
         npc = {r=0, g=1, b=0},
-        questSection = {r=0.8, g=0.8, b=0.8},
-        available = {r=1, g=1, b=0},
-        active = {r=0.7, g=1, b=0.7}
+        questSection = {r=1, g=1, b=1},
+        available = {r=0.5, g=0.5, b=0.5},
+        active = {r=1, g=0.8, b=0}
     }
     
     local sortedZones = {}
@@ -363,7 +317,8 @@ local function UpdateGUIContent()
         if zoneName and zoneName ~= "" then
             local zoneHasQuests = false
             for _, npc in pairs(npcs) do
-                if TableLength(npc.questInfo.availableQuests) > 0 or TableLength(npc.questInfo.activeQuests) > 0 then
+                -- Add defensive check for questInfo
+                if npc.questInfo and (TableLength(npc.questInfo.availableQuests) > 0 or TableLength(npc.questInfo.activeQuests) > 0) then
                     zoneHasQuests = true
                     break
                 end
@@ -380,7 +335,8 @@ local function UpdateGUIContent()
         local subzoneGroups = {}
         
         for _, npc in pairs(npcs) do
-            if TableLength(npc.questInfo.availableQuests) > 0 or TableLength(npc.questInfo.activeQuests) > 0 then
+            -- Add defensive check for questInfo
+            if npc.questInfo and (TableLength(npc.questInfo.availableQuests) > 0 or TableLength(npc.questInfo.activeQuests) > 0) then
                 local subzoneName = npc.subzone
                 if not subzoneName or subzoneName == "" then
                     subzoneName = "Undiscovered Area"
@@ -391,6 +347,8 @@ local function UpdateGUIContent()
                 table.insert(subzoneGroups[subzoneName], npc)
             end
         end
+        
+        -- Rest of the function stays the same...
         
         local isZoneCollapsed = ExplorerMapGUI.collapsedZones[zoneName]
         local zoneSymbol = isZoneCollapsed and "[+]" or "[-]"
@@ -407,7 +365,7 @@ local function UpdateGUIContent()
         zoneButton:SetScript("OnClick", function()
             local zn = this.zoneName
             ExplorerMapGUI.collapsedZones[zn] = not ExplorerMapGUI.collapsedZones[zn]
-			SaveGUIState()
+            SaveGUIState()
             UpdateGUIContent()
         end)
         
@@ -438,7 +396,7 @@ local function UpdateGUIContent()
                 subzoneButton:SetScript("OnClick", function()
                     local sk = this.subzoneKey
                     ExplorerMapGUI.collapsedSubzones[sk] = not ExplorerMapGUI.collapsedSubzones[sk]
-					SaveGUIState()
+                    SaveGUIState()
                     UpdateGUIContent()
                 end)
                 
@@ -464,7 +422,7 @@ local function UpdateGUIContent()
                         npcButton:SetScript("OnClick", function()
                             local nk = this.npcKey
                             ExplorerMapGUI.collapsedNPCs[nk] = not ExplorerMapGUI.collapsedNPCs[nk]
-							SaveGUIState()
+                            SaveGUIState()
                             UpdateGUIContent()
                         end)
                         
@@ -488,7 +446,7 @@ local function UpdateGUIContent()
                                 availableButton:SetScript("OnClick", function()
                                     local qsk = this.questSectionKey
                                     ExplorerMapGUI.collapsedQuestSections[qsk] = not ExplorerMapGUI.collapsedQuestSections[qsk]
-									SaveGUIState()
+                                    SaveGUIState()
                                     UpdateGUIContent()
                                 end)
                                 
@@ -526,7 +484,7 @@ local function UpdateGUIContent()
                                 activeButton:SetScript("OnClick", function()
                                     local qsk = this.questSectionKey
                                     ExplorerMapGUI.collapsedQuestSections[qsk] = not ExplorerMapGUI.collapsedQuestSections[qsk]
-									SaveGUIState()
+                                    SaveGUIState()
                                     UpdateGUIContent()
                                 end)
                                 
@@ -569,6 +527,114 @@ local function UpdateGUIContent()
     end
 end
 
+local function CollapseAll()
+    for zoneName, npcs in pairs(ExplorerMap.db) do
+        ExplorerMapGUI.collapsedZones[zoneName] = true
+        
+        local subzoneGroups = {}
+        for _, npc in pairs(npcs) do
+            if TableLength(npc.questInfo.availableQuests) > 0 or TableLength(npc.questInfo.activeQuests) > 0 then
+                local subzoneName = npc.subzone
+                if not subzoneName or subzoneName == "" then
+                    subzoneName = "Undiscovered Area"
+                end
+                subzoneGroups[subzoneName] = true
+            end
+        end
+        
+        for subzoneName, _ in pairs(subzoneGroups) do
+            local subzoneKey = zoneName .. "_" .. subzoneName
+            ExplorerMapGUI.collapsedSubzones[subzoneKey] = true
+            
+            for _, npc in pairs(npcs) do
+                if (npc.subzone == subzoneName or (not npc.subzone and subzoneName == "Undiscovered Area")) and
+                   (TableLength(npc.questInfo.availableQuests) > 0 or TableLength(npc.questInfo.activeQuests) > 0) then
+                    local npcKey = zoneName .. "_" .. subzoneName .. "_" .. npc.name
+                    ExplorerMapGUI.collapsedNPCs[npcKey] = true
+                    
+                    if TableLength(npc.questInfo.availableQuests) > 0 then
+                        ExplorerMapGUI.collapsedQuestSections[npcKey .. "_available"] = true
+                    end
+                    if TableLength(npc.questInfo.activeQuests) > 0 then
+                        ExplorerMapGUI.collapsedQuestSections[npcKey .. "_active"] = true
+                    end
+                end
+            end
+        end
+    end
+    SaveGUIState()
+    UpdateGUIContent()
+end
+
+local function ExpandAll()
+    ExplorerMapGUI.collapsedZones = {}
+    ExplorerMapGUI.collapsedSubzones = {}
+    ExplorerMapGUI.collapsedNPCs = {}
+    ExplorerMapGUI.collapsedQuestSections = {}
+    SaveGUIState()
+    UpdateGUIContent()
+end
+
+local function CreateGUI()
+    if ExplorerMapGUI.frame then return end
+    
+    local frame = CreateFrame("Frame", "ExplorerMapGUIFrame", UIParent)
+    frame:SetWidth(450)
+    frame:SetHeight(400)
+    frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    frame:SetBackdrop({
+        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+        tile = true, tileSize = 32, edgeSize = 32,
+        insets = { left = 8, right = 8, top = 8, bottom = 8 }
+    })
+    frame:SetBackdropColor(0, 0, 0, 1)
+    frame:EnableMouse(true)
+    frame:SetMovable(true)
+    frame:RegisterForDrag("LeftButton")
+    frame:SetScript("OnDragStart", function() this:StartMoving() end)
+    frame:SetScript("OnDragStop", function() this:StopMovingOrSizing() end)
+	
+	table.insert(UISpecialFrames, "ExplorerMapGUIFrame")
+    
+    local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    title:SetPoint("TOP", frame, "TOP", 0, -15)
+    title:SetText("Explorer's Map - Quest Givers")
+    
+local collapseBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+collapseBtn:SetWidth(80)
+collapseBtn:SetHeight(20)
+collapseBtn:SetPoint("CENTER", frame, "TOP", -42.5, -45)
+collapseBtn:SetText("Collapse All")
+collapseBtn:SetScript("OnClick", function() CollapseAll() end)
+
+local expandBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+expandBtn:SetWidth(80)
+expandBtn:SetHeight(20)
+expandBtn:SetPoint("CENTER", frame, "TOP", 42.5, -45)
+expandBtn:SetText("Expand All")
+expandBtn:SetScript("OnClick", function() ExpandAll() end)
+    
+    local closeBtn = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
+    closeBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -5, -5)
+    closeBtn:SetScript("OnClick", function() ToggleGUI() end)
+    
+    local scrollFrame = CreateFrame("ScrollFrame", "ExplorerMapScrollFrame", frame, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 15, -65)
+    scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -35, 15)
+    
+    local content = CreateFrame("Frame", "ExplorerMapContent", scrollFrame)
+    content:SetWidth(400)
+    content:SetHeight(1)
+    scrollFrame:SetScrollChild(content)
+    
+    ExplorerMapGUI.frame = frame
+    ExplorerMapGUI.content = content
+    ExplorerMapGUI.scrollFrame = scrollFrame
+    
+    frame:Hide()
+end
+
 function ToggleGUI()
     if not ExplorerMapGUI.frame then
         CreateGUI()
@@ -583,6 +649,8 @@ function ToggleGUI()
         ExplorerMapGUI.isVisible = true
     end
 end
+
+
 
 ---------------------------------------------------
 -- Quest Log Scanning 
