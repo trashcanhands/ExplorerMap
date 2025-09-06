@@ -139,8 +139,8 @@ local function CreateMapIcon(npc)
 
     local iconName = "ExplorerMap_Icon_"..math.random(1000,9999)
     local icon = CreateFrame("Button", iconName, WorldMapButton)
-    icon:SetWidth(12)
-    icon:SetHeight(16)
+    icon:SetWidth(18)
+    icon:SetHeight(22)
     icon:SetFrameStrata("TOOLTIP")
     icon:SetFrameLevel(100)
 
