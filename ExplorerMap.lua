@@ -304,7 +304,7 @@ local function UpdateGUIContent()
     local yPos = -10
     local lineHeight = 18
     local colors = {
-        zone = {r=0, g=0, b=0.8},
+        zone = {r=0, g=0, b=1},
         subzone = {r=0.5, g=0.5, b=1},
         npc = {r=0, g=1, b=0},
         questSection = {r=1, g=1, b=1},
