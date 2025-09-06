@@ -688,30 +688,36 @@ local function OnEvent()
     ExplorerMapGUI.collapsedNPCs = ExplorerMapDB[key].guiState.collapsedNPCs
     ExplorerMapGUI.collapsedQuestSections = ExplorerMapDB[key].guiState.collapsedQuestSections
         
-    elseif event=="QUEST_DETAIL" then
-        SetMapToCurrentZone()
-        local npcName = UnitName("target")
-        local questTitle = GetTitleText()
-        local x,y = GetPlayerMapPosition("player")
-        local zone = GetRealZoneText()
-        local subzone = GetSubZoneText()
-        local t = time()
+elseif event=="QUEST_DETAIL" then
+    SetMapToCurrentZone()
+    local npcName = UnitName("target")
+    local questTitle = GetTitleText()
+    local x,y = GetPlayerMapPosition("player")
+    local zone = GetRealZoneText()
+    local subzone = GetSubZoneText()
+    local t = time()
+    
+    if npcName and questTitle and zone then
+        local questAlreadyInLog = false
+        local numQuests = GetNumQuestLogEntries()
+        for i=1,numQuests do
+            local title, level, _, isHeader = GetQuestLogTitle(i)
+            if title and not isHeader and title == questTitle then
+                questAlreadyInLog = true
+                break
+            end
+        end
         
-        --DEFAULT_CHAT_FRAME:AddMessage("DEBUG: QUEST_DETAIL - NPC: "..(npcName or "nil")..", Quest: "..(questTitle or "nil")..", Coords: "..(x or 0)..",".. (y or 0)..", Zone: "..(zone or "nil"))
-        
-        if npcName and questTitle and zone then
+        if not questAlreadyInLog then
             if x == 0 and y == 0 then
-                --DEFAULT_CHAT_FRAME:AddMessage("WARNING: Got 0,0 coordinates, trying alternate method")
                 SetMapToCurrentZone()
                 x, y = GetPlayerMapPosition("player")
-                --DEFAULT_CHAT_FRAME:AddMessage("DEBUG: Retry coords: "..x..","..y)
             end
             
             if x > 0 and y > 0 then
                 local npc = CreateNPCIfNeeded(npcName,x,y,zone,subzone)
                 
                 local questLevel = nil
-                local numQuests = GetNumQuestLogEntries()
                 for i=1,numQuests do
                     local title, level, _, isHeader = GetQuestLogTitle(i)
                     if title and not isHeader and title == questTitle then
@@ -721,12 +727,10 @@ local function OnEvent()
                 end
                 
                 AddAvailableQuest(npc, questTitle, questLevel)
-                --DEFAULT_CHAT_FRAME:AddMessage("DEBUG: Added quest '"..questTitle.."' to NPC '"..npcName.."'")
                 lastSavedNPC[npcName] = t
-            else
-                --DEFAULT_CHAT_FRAME:AddMessage("DEBUG: Failed validation - x:"..x.." y:"..y)
             end
         end
+    end
         
     elseif event=="QUEST_GREETING" then
         SetMapToCurrentZone()
@@ -810,6 +814,7 @@ elseif msg=="clear" then
         DEFAULT_CHAT_FRAME:AddMessage("/explorer sweep - Remove NPCs with no quests")
     end
 end
+
 
 
 
