@@ -657,7 +657,7 @@ local function CleanOldData()
             end
         end
     end
-    DEFAULT_CHAT_FRAME:AddMessage("ExplorerMap: Cleaned " .. cleaned .. " empty NPCs")
+    DEFAULT_CHAT_FRAME:AddMessage("ExplorerMap: Removed " .. cleaned .. " obsolete quest givers")
 end
 
 ---------------------------------------------------
@@ -800,15 +800,16 @@ elseif msg=="clear" then
     ExplorerMapGUI.collapsedNPCs = {}
     ExplorerMapGUI.collapsedQuestSections = {}
     DEFAULT_CHAT_FRAME:AddMessage("ExplorerMap: All data cleared")
-    elseif msg=="clean" then
+    elseif msg=="sweep" then
         CleanOldData()
     else
         DEFAULT_CHAT_FRAME:AddMessage("ExplorerMap commands:")
         DEFAULT_CHAT_FRAME:AddMessage("/explorer gui - Open quest giver window")
         DEFAULT_CHAT_FRAME:AddMessage("/explorer refresh - Refresh map icons")
         DEFAULT_CHAT_FRAME:AddMessage("/explorer clear - Clear all data")
-        DEFAULT_CHAT_FRAME:AddMessage("/explorer clean - Remove NPCs with no quests")
+        DEFAULT_CHAT_FRAME:AddMessage("/explorer sweep - Remove NPCs with no quests")
     end
 end
+
 
 
