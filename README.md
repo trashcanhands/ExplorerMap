@@ -4,7 +4,7 @@ Explorer's Map is a quest marker add-on alternative for vanilla World of Warcraf
 This add-on is all about embracing exploration while still allowing players a way to keep track of Quest Givers (and their quest offerings)
 
 ## INSTRUCTIONS
-<img align="center" src="https://imgur.com/J283wVL.png">
+<img align="center" src="https://imgur.com/2dw2OIf.png">
 
 Upon completion of all Active Quests from a Quest Giver (that has no remaining Available Quests listed), the quest marker icon will then be removed from your World Map
 
