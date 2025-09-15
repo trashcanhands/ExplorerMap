@@ -182,6 +182,8 @@ local function CreateMapIcon(npc)
             end
         end
         GameTooltip:Show()
+        GameTooltip:SetFrameStrata("TOOLTIP")
+        GameTooltip:SetFrameLevel(101)
     end)
 
     icon:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -882,7 +884,3 @@ elseif msg=="clear" then
         DEFAULT_CHAT_FRAME:AddMessage("/explorer sweep - Remove NPCs with no quests")
     end
 end
-
-
-
-
