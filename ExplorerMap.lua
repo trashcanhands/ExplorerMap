@@ -111,12 +111,20 @@ end
 
 local function AbandonQuest(npc, questName)
     if IsQuestInList(npc.questInfo.activeQuests, questName) then
+        DEFAULT_CHAT_FRAME:AddMessage("ABANDONING: " .. questName .. " from " .. npc.name)
         RemoveQuestFromList(npc.questInfo.activeQuests, questName)
         if not IsQuestInList(npc.questInfo.completedQuests or {}, questName) then
             AddAvailableQuest(npc, questName)
+            DEFAULT_CHAT_FRAME:AddMessage("MOVED BACK TO AVAILABLE for " .. npc.name)
+        end
+    else
+        if npc.name:find("Guard") then -- Only debug guard NPCs
+            DEFAULT_CHAT_FRAME:AddMessage("QUEST " .. questName .. " NOT IN ACTIVE LIST for " .. npc.name)
         end
     end
 end
+
+
 
 ---------------------------------------------------
 -- Map Icons
@@ -124,10 +132,11 @@ end
 local function GetNPCIconType(npc)
     local hasAvailable = TableLength(npc.questInfo.availableQuests) > 0
     local hasActive = TableLength(npc.questInfo.activeQuests) > 0
+    
     if hasAvailable then
         return "available"
     elseif hasActive then
-        return "active"
+        return "active"  
     else
         return "hidden"
     end
@@ -155,40 +164,61 @@ local function CreateMapIcon(npc)
     if iconType == "available" then
         texture:SetVertexColor(1, 1, 0, 1.0)
     else
-        texture:SetVertexColor(1, 0.5, 0, 1.0)
+        texture:SetVertexColor(0.7, 1, 0.7)
     end
 
     icon.npcData = npc
 
     icon:SetScript("OnEnter", function()
-        GameTooltip:SetOwner(this, "ANCHOR_CURSOR")
-        GameTooltip:ClearLines()
-        GameTooltip:AddLine(this.npcData.name, 0, 1, 0)
-        if this.npcData.subzone and this.npcData.subzone~="" then
-            GameTooltip:AddLine(this.npcData.subzone, 0.8, 0.8, 0.8)
+    local available = this.npcData.questInfo.availableQuests
+    local active = this.npcData.questInfo.activeQuests
+    local iconType = GetNPCIconType(this.npcData)
+    
+    DEFAULT_CHAT_FRAME:AddMessage("HOVER DEBUG: " .. this.npcData.name .. " - IconType: " .. iconType .. ", Available: " .. TableLength(available) .. ", Active: " .. TableLength(active))
+    
+    GameTooltip:SetOwner(this, "ANCHOR_CURSOR")
+    GameTooltip:ClearLines()
+    GameTooltip:AddLine(this.npcData.name, 0, 1, 0)
+    if this.npcData.subzone and this.npcData.subzone~="" then
+        GameTooltip:AddLine(this.npcData.subzone, 0.8, 0.8, 0.8)
+    end
+    
+    if TableLength(available)>0 then
+        GameTooltip:AddLine("Available Quests:", 1, 1, 0)
+        for i=1,TableLength(available) do
+            GameTooltip:AddLine("  "..available[i], 1, 1, 0)
         end
-        local available = this.npcData.questInfo.availableQuests
-        local active = this.npcData.questInfo.activeQuests
-        if TableLength(available)>0 then
-            GameTooltip:AddLine("Available Quests:", 1, 1, 0)
-            for i=1,TableLength(available) do
-                GameTooltip:AddLine("  "..available[i], 1, 1, 0)
-            end
+    end
+    if TableLength(active)>0 then
+        GameTooltip:AddLine("Active Quests:", 0.5, 1, 0.5)
+        for i=1,TableLength(active) do
+            GameTooltip:AddLine("  "..active[i], 0.7, 1, 0.7)
         end
-        if TableLength(active)>0 then
-            GameTooltip:AddLine("Active Quests:", 0.5, 1, 0.5)
-            for i=1,TableLength(active) do
-                GameTooltip:AddLine("  "..active[i], 0.7, 1, 0.7)
-            end
-        end
-        GameTooltip:Show()
-        GameTooltip:SetFrameStrata("TOOLTIP")
-        GameTooltip:SetFrameLevel(101)
-    end)
+    end
+    GameTooltip:Show()
+    GameTooltip:SetFrameStrata("TOOLTIP")
+    GameTooltip:SetFrameLevel(101)
+end)
 
     icon:SetScript("OnLeave", function() GameTooltip:Hide() end)
     icon:Show()
     return icon
+end
+
+local function RefreshIconColors()
+    for _, icon in ipairs(ExplorerMap.mapIcons) do
+        if icon and icon.npcData then
+            local iconType = GetNPCIconType(icon.npcData)
+            local texture = icon:GetRegions()
+            if texture then
+                if iconType == "available" then
+                    texture:SetVertexColor(1, 1, 0, 1.0)
+                elseif iconType == "active" then
+                    texture:SetVertexColor(0.7, 1, 0.7)
+                end
+            end
+        end
+    end
 end
 
 local function UpdateMapIcons()
@@ -223,6 +253,8 @@ local function CheckWorldMap()
         UpdateMapIcons()
     end
 end
+
+
 
 ---------------------------------------------------
 -- GUI Creation
@@ -279,7 +311,7 @@ local function CreateClickableText(parent, text, x, y, color, onClick)
     end
     
     button:SetScript("OnEnter", function()
-        fontString:SetTextColor(0.9, 0.7, 1)
+        fontString:SetTextColor(1, 1, 1)
     end)
     button:SetScript("OnLeave", function()
         fontString:SetTextColor(color.r, color.g, color.b)
@@ -305,13 +337,14 @@ local function UpdateGUIContent()
     
     local yPos = -10
     local lineHeight = 18
-    local colors = {
-        zone = {r=0, g=0, b=1},
-        subzone = {r=0.5, g=0.5, b=1},
-        npc = {r=0, g=1, b=0},
-        questSection = {r=1, g=1, b=1},
-        available = {r=0.5, g=0.5, b=0.5},
-        active = {r=1, g=0.8, b=0}
+	local colors = {
+		zone = {r=1, g=0.6, b=0.3},
+		subzone = {r=0.8, g=0.5, b=0},
+		npc = {r=0, g=1, b=0},
+		availableHeader = {r=1, g=1, b=0},
+		activeHeader = {r=0.5, g=0.8, b=0.5},
+		available = {r=0.6, g=0.6, b=0.6},
+		active = {r=0.8, g=1, b=0.8}
     }
     
     local sortedZones = {}
@@ -341,7 +374,7 @@ local function UpdateGUIContent()
             if npc.questInfo and (TableLength(npc.questInfo.availableQuests) > 0 or TableLength(npc.questInfo.activeQuests) > 0) then
                 local subzoneName = npc.subzone
                 if not subzoneName or subzoneName == "" then
-                    subzoneName = "Undiscovered Area"
+                    subzoneName = "Unknown Area"
                 end
                 if not subzoneGroups[subzoneName] then
                     subzoneGroups[subzoneName] = {}
@@ -350,14 +383,12 @@ local function UpdateGUIContent()
             end
         end
         
-        -- Rest of the function stays the same...
-        
         local isZoneCollapsed = ExplorerMapGUI.collapsedZones[zoneName]
         local zoneSymbol = isZoneCollapsed and "[+]" or "[-]"
         
         local zoneButton = CreateClickableText(
             ExplorerMapGUI.content,
-            zoneSymbol .. " " .. zoneName,
+            zoneSymbol .. " " .. string.upper(zoneName),
             10, yPos,
             colors.zone,
             nil
@@ -440,7 +471,7 @@ local function UpdateGUIContent()
                                     ExplorerMapGUI.content,
                                     "      " .. availableSymbol .. " Available Quests",
                                     40, yPos,
-                                    colors.questSection,
+                                    colors.availableHeader,
                                     nil
                                 )
                                 
@@ -478,7 +509,7 @@ local function UpdateGUIContent()
                                     ExplorerMapGUI.content,
                                     "      " .. activeSymbol .. " Active Quests",
                                     40, yPos,
-                                    colors.questSection,
+                                    colors.activeHeader,
                                     nil
                                 )
                                 
@@ -581,52 +612,79 @@ local function CreateGUI()
     if ExplorerMapGUI.frame then return end
     
     local frame = CreateFrame("Frame", "ExplorerMapGUIFrame", UIParent)
-    frame:SetWidth(450)
-    frame:SetHeight(400)
+    frame:SetWidth(384)
+    frame:SetHeight(512)
     frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-    frame:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-        tile = true, tileSize = 32, edgeSize = 32,
-        insets = { left = 8, right = 8, top = 8, bottom = 8 }
-    })
-    frame:SetBackdropColor(0, 0, 0, 1)
     frame:EnableMouse(true)
     frame:SetMovable(true)
     frame:RegisterForDrag("LeftButton")
     frame:SetScript("OnDragStart", function() this:StartMoving() end)
     frame:SetScript("OnDragStop", function() this:StopMovingOrSizing() end)
-	
-	table.insert(UISpecialFrames, "ExplorerMapGUIFrame")
     
-    local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    title:SetPoint("TOP", frame, "TOP", 0, -15)
-    title:SetText("Explorer's Map - Quest Givers")
+    table.insert(UISpecialFrames, "ExplorerMapGUIFrame")
     
-local collapseBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-collapseBtn:SetWidth(80)
-collapseBtn:SetHeight(20)
-collapseBtn:SetPoint("CENTER", frame, "TOP", -42.5, -45)
-collapseBtn:SetText("Collapse All")
-collapseBtn:SetScript("OnClick", function() CollapseAll() end)
-
-local expandBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-expandBtn:SetWidth(80)
-expandBtn:SetHeight(20)
-expandBtn:SetPoint("CENTER", frame, "TOP", 42.5, -45)
-expandBtn:SetText("Expand All")
-expandBtn:SetScript("OnClick", function() ExpandAll() end)
+    local topLeft = frame:CreateTexture(nil, "BACKGROUND")
+    topLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft")
+    topLeft:SetWidth(256)
+    topLeft:SetHeight(256)
+    topLeft:SetPoint("TOPLEFT", frame, "TOPLEFT", 2, -1)
+    
+    local topRight = frame:CreateTexture(nil, "BACKGROUND")
+    topRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight")
+    topRight:SetWidth(128)
+    topRight:SetHeight(256)
+    topRight:SetPoint("TOPLEFT", frame, "TOPLEFT", 258, -1)
+    
+    local bottomLeft = frame:CreateTexture(nil, "BACKGROUND")
+    bottomLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomLeft")
+    bottomLeft:SetWidth(256)
+    bottomLeft:SetHeight(256)
+    bottomLeft:SetPoint("TOPLEFT", frame, "TOPLEFT", 2, -257)
+    
+    local bottomRight = frame:CreateTexture(nil, "BACKGROUND")
+    bottomRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomRight")
+    bottomRight:SetWidth(128)
+    bottomRight:SetHeight(256)
+    bottomRight:SetPoint("TOPLEFT", frame, "TOPLEFT", 258, -257)
+    
+    -- Portrait
+    local portrait = frame:CreateTexture("ExplorerMapFramePortrait", "ARTWORK")
+    portrait:SetTexture("Interface\\AddOns\\ExplorerMap\\icon")
+    portrait:SetWidth(64)
+    portrait:SetHeight(64)
+    portrait:SetPoint("TOPLEFT", frame, "TOPLEFT", 9, -7)
+    
+    -- Title
+    local title = frame:CreateFontString("ExplorerMapNameText", "OVERLAY", "GameFontNormal")
+    title:SetPoint("TOP", frame, "TOP", 0, -18)
+    title:SetText("Explorer's Map")
+    title:SetTextColor(1, 1, 1)
     
     local closeBtn = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
-    closeBtn:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -5, -5)
+    closeBtn:SetPoint("CENTER", frame, "TOPRIGHT", -44, -26)
     closeBtn:SetScript("OnClick", function() ToggleGUI() end)
     
+    local collapseBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    collapseBtn:SetWidth(80)
+    collapseBtn:SetHeight(20)
+    collapseBtn:SetPoint("CENTER", frame, "TOP", -50, -60)
+    collapseBtn:SetText("Collapse All")
+    collapseBtn:SetScript("OnClick", function() CollapseAll() end)
+
+    local expandBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    expandBtn:SetWidth(80)
+    expandBtn:SetHeight(20)
+    expandBtn:SetPoint("CENTER", frame, "TOP", 50, -60)
+    expandBtn:SetText("Expand All")
+    expandBtn:SetScript("OnClick", function() ExpandAll() end)
+    
+    -- Quest list
     local scrollFrame = CreateFrame("ScrollFrame", "ExplorerMapScrollFrame", frame, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 15, -65)
-    scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -35, 15)
+    scrollFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 25, -85)
+    scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -65, 90)
     
     local content = CreateFrame("Frame", "ExplorerMapContent", scrollFrame)
-    content:SetWidth(400)
+    content:SetWidth(290)
     content:SetHeight(1)
     scrollFrame:SetScrollChild(content)
     
@@ -695,14 +753,31 @@ local function ScanQuestLog()
 
     for questName,_ in pairs(currentQuests) do
         if not questLogSnapshot[questName] then
+            local targetNPC = UnitName("target")
             local questHandled = false
+            
             for zone,npcs in pairs(ExplorerMap.db) do
                 if questHandled then break end
                 for _, npc in pairs(npcs) do
                     if npc.questInfo and IsQuestInList(npc.questInfo.availableQuests, questName) and not questHandled then
-                        AcceptQuest(npc, questName)
-                        questHandled = true
-                        break
+                        if targetNPC and npc.name == targetNPC then
+                            AcceptQuest(npc, questName)
+                            questHandled = true
+                            break
+                        end
+                    end
+                end
+            end
+            
+            if not questHandled then
+                for zone,npcs in pairs(ExplorerMap.db) do
+                    if questHandled then break end
+                    for _, npc in pairs(npcs) do
+                        if npc.questInfo and IsQuestInList(npc.questInfo.availableQuests, questName) and not questHandled then
+                            AcceptQuest(npc, questName)
+                            questHandled = true
+                            break
+                        end
                     end
                 end
             end
@@ -710,24 +785,53 @@ local function ScanQuestLog()
     end
 
     questLogSnapshot = currentQuests
+    RefreshIconColors()
 end
-
 ---------------------------------------------------
 -- Data Management
 ---------------------------------------------------
 local function CleanOldData()
     local cleaned = 0
+    local questsCleaned = 0
+    
     for zoneName, npcs in pairs(ExplorerMap.db) do
         for npcKey, npc in pairs(npcs) do
-            if TableLength(npc.questInfo.availableQuests) == 0 and 
-               TableLength(npc.questInfo.activeQuests) == 0 and
-               TableLength(npc.questInfo.completedQuests) == 0 then
-                ExplorerMap.db[zoneName][npcKey] = nil
-                cleaned = cleaned + 1
+            if npc.questInfo then
+                local cleanedActive = {}
+                local numQuests = GetNumQuestLogEntries()
+                
+                for i = 1, TableLength(npc.questInfo.activeQuests) do
+                    local questName = npc.questInfo.activeQuests[i]
+                    local foundInLog = false
+                    
+                    for j = 1, numQuests do
+                        local title, _, _, isHeader = GetQuestLogTitle(j)
+                        if title and not isHeader and title == questName then
+                            foundInLog = true
+                            break
+                        end
+                    end
+                    
+                    if foundInLog then
+                        table.insert(cleanedActive, questName)
+                    else
+                        questsCleaned = questsCleaned + 1
+                    end
+                end
+                
+                npc.questInfo.activeQuests = cleanedActive
+                
+                if TableLength(npc.questInfo.availableQuests) == 0 and 
+                   TableLength(npc.questInfo.activeQuests) == 0 and
+                   TableLength(npc.questInfo.completedQuests) == 0 then
+                    ExplorerMap.db[zoneName][npcKey] = nil
+                    cleaned = cleaned + 1
+                end
             end
         end
     end
-    DEFAULT_CHAT_FRAME:AddMessage("ExplorerMap: Removed " .. cleaned .. " obsolete quest givers")
+    
+    DEFAULT_CHAT_FRAME:AddMessage("ExplorerMap: Removed " .. cleaned .. " obsolete NPCs and " .. questsCleaned .. " orphaned quests")
 end
 
 ---------------------------------------------------
