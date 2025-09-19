@@ -80,7 +80,6 @@ local function AddAvailableQuest(npc, questName, questLevel)
        not IsQuestInList(npc.questInfo.activeQuests, questName) and
        not IsQuestInList(npc.questInfo.completedQuests or {}, questName) then
         table.insert(npc.questInfo.availableQuests, questName)
-        -- Store the quest level
         if not npc.questInfo.questLevels then npc.questInfo.questLevels = {} end
         if questLevel then
             npc.questInfo.questLevels[questName] = questLevel
@@ -111,20 +110,12 @@ end
 
 local function AbandonQuest(npc, questName)
     if IsQuestInList(npc.questInfo.activeQuests, questName) then
-        DEFAULT_CHAT_FRAME:AddMessage("ABANDONING: " .. questName .. " from " .. npc.name)
         RemoveQuestFromList(npc.questInfo.activeQuests, questName)
         if not IsQuestInList(npc.questInfo.completedQuests or {}, questName) then
             AddAvailableQuest(npc, questName)
-            DEFAULT_CHAT_FRAME:AddMessage("MOVED BACK TO AVAILABLE for " .. npc.name)
-        end
-    else
-        if npc.name:find("Guard") then -- Only debug guard NPCs
-            DEFAULT_CHAT_FRAME:AddMessage("QUEST " .. questName .. " NOT IN ACTIVE LIST for " .. npc.name)
         end
     end
 end
-
-
 
 ---------------------------------------------------
 -- Map Icons
@@ -170,35 +161,32 @@ local function CreateMapIcon(npc)
     icon.npcData = npc
 
     icon:SetScript("OnEnter", function()
-    local available = this.npcData.questInfo.availableQuests
-    local active = this.npcData.questInfo.activeQuests
-    local iconType = GetNPCIconType(this.npcData)
-    
-    DEFAULT_CHAT_FRAME:AddMessage("HOVER DEBUG: " .. this.npcData.name .. " - IconType: " .. iconType .. ", Available: " .. TableLength(available) .. ", Active: " .. TableLength(active))
-    
-    GameTooltip:SetOwner(this, "ANCHOR_CURSOR")
-    GameTooltip:ClearLines()
-    GameTooltip:AddLine(this.npcData.name, 0, 1, 0)
-    if this.npcData.subzone and this.npcData.subzone~="" then
-        GameTooltip:AddLine(this.npcData.subzone, 0.8, 0.8, 0.8)
-    end
-    
-    if TableLength(available)>0 then
-        GameTooltip:AddLine("Available Quests:", 1, 1, 0)
-        for i=1,TableLength(available) do
-            GameTooltip:AddLine("  "..available[i], 1, 1, 0)
+        local available = this.npcData.questInfo.availableQuests
+        local active = this.npcData.questInfo.activeQuests
+        
+        GameTooltip:SetOwner(this, "ANCHOR_CURSOR")
+        GameTooltip:ClearLines()
+        GameTooltip:AddLine(this.npcData.name, 0, 1, 0)
+        if this.npcData.subzone and this.npcData.subzone~="" then
+            GameTooltip:AddLine(this.npcData.subzone, 0.8, 0.8, 0.8)
         end
-    end
-    if TableLength(active)>0 then
-        GameTooltip:AddLine("Active Quests:", 0.5, 1, 0.5)
-        for i=1,TableLength(active) do
-            GameTooltip:AddLine("  "..active[i], 0.7, 1, 0.7)
+        
+        if TableLength(available)>0 then
+            GameTooltip:AddLine("Available Quests:", 1, 1, 0)
+            for i=1,TableLength(available) do
+                GameTooltip:AddLine("  "..available[i], 1, 1, 0)
+            end
         end
-    end
-    GameTooltip:Show()
-    GameTooltip:SetFrameStrata("TOOLTIP")
-    GameTooltip:SetFrameLevel(101)
-end)
+        if TableLength(active)>0 then
+            GameTooltip:AddLine("Active Quests:", 0.5, 1, 0.5)
+            for i=1,TableLength(active) do
+                GameTooltip:AddLine("  "..active[i], 0.7, 1, 0.7)
+            end
+        end
+        GameTooltip:Show()
+        GameTooltip:SetFrameStrata("TOOLTIP")
+        GameTooltip:SetFrameLevel(101)
+    end)
 
     icon:SetScript("OnLeave", function() GameTooltip:Hide() end)
     icon:Show()
@@ -253,8 +241,6 @@ local function CheckWorldMap()
         UpdateMapIcons()
     end
 end
-
-
 
 ---------------------------------------------------
 -- GUI Creation
@@ -338,10 +324,10 @@ local function UpdateGUIContent()
     local yPos = -10
     local lineHeight = 18
 	local colors = {
-		zone = {r=1, g=0.6, b=0.3},
-		subzone = {r=0.8, g=0.5, b=0},
+		zone = {r=1, g=0.4, b=0.2},
+		subzone = {r=1, g=0.7, b=0.5},
 		npc = {r=0, g=1, b=0},
-		availableHeader = {r=1, g=1, b=0},
+		availableHeader = {r=1, g=0.8, b=0},
 		activeHeader = {r=0.5, g=0.8, b=0.5},
 		available = {r=0.6, g=0.6, b=0.6},
 		active = {r=0.8, g=1, b=0.8}
@@ -352,7 +338,6 @@ local function UpdateGUIContent()
         if zoneName and zoneName ~= "" then
             local zoneHasQuests = false
             for _, npc in pairs(npcs) do
-                -- Add defensive check for questInfo
                 if npc.questInfo and (TableLength(npc.questInfo.availableQuests) > 0 or TableLength(npc.questInfo.activeQuests) > 0) then
                     zoneHasQuests = true
                     break
@@ -370,7 +355,6 @@ local function UpdateGUIContent()
         local subzoneGroups = {}
         
         for _, npc in pairs(npcs) do
-            -- Add defensive check for questInfo
             if npc.questInfo and (TableLength(npc.questInfo.availableQuests) > 0 or TableLength(npc.questInfo.activeQuests) > 0) then
                 local subzoneName = npc.subzone
                 if not subzoneName or subzoneName == "" then
@@ -384,7 +368,7 @@ local function UpdateGUIContent()
         end
         
         local isZoneCollapsed = ExplorerMapGUI.collapsedZones[zoneName]
-        local zoneSymbol = isZoneCollapsed and "[+]" or "[-]"
+        local zoneSymbol = isZoneCollapsed and "|cFF00FFFF[+]|r" or "|cFF00FFFF[-]|r"
         
         local zoneButton = CreateClickableText(
             ExplorerMapGUI.content,
@@ -415,7 +399,7 @@ local function UpdateGUIContent()
                 local subzoneNPCs = subzoneGroups[subzoneName]
                 local subzoneKey = zoneName .. "_" .. subzoneName
                 local isSubzoneCollapsed = ExplorerMapGUI.collapsedSubzones[subzoneKey]
-                local subzoneSymbol = isSubzoneCollapsed and "[+]" or "[-]"
+                local subzoneSymbol = isSubzoneCollapsed and "|cFF00FFFF[+]|r" or "|cFF00FFFF[-]|r"
                 
                 local subzoneButton = CreateClickableText(
                     ExplorerMapGUI.content,
@@ -441,7 +425,7 @@ local function UpdateGUIContent()
                     for _, npc in ipairs(subzoneNPCs) do
                         local npcKey = zoneName .. "_" .. subzoneName .. "_" .. npc.name
                         local isNPCCollapsed = ExplorerMapGUI.collapsedNPCs[npcKey]
-                        local npcSymbol = isNPCCollapsed and "[+]" or "[-]"
+                        local npcSymbol = isNPCCollapsed and "|cFF00FFFF[+]|r" or "|cFF00FFFF[-]|r"
                         
                         local npcButton = CreateClickableText(
                             ExplorerMapGUI.content,
@@ -465,7 +449,7 @@ local function UpdateGUIContent()
                             if TableLength(npc.questInfo.availableQuests) > 0 then
                                 local availableKey = npcKey .. "_available"
                                 local isAvailableCollapsed = ExplorerMapGUI.collapsedQuestSections[availableKey]
-                                local availableSymbol = isAvailableCollapsed and "[+]" or "[-]"
+                                local availableSymbol = isAvailableCollapsed and "|cFF00FFFF[+]|r" or "|cFF00FFFF[-]|r"
                                 
                                 local availableButton = CreateClickableText(
                                     ExplorerMapGUI.content,
@@ -503,7 +487,7 @@ local function UpdateGUIContent()
                             if TableLength(npc.questInfo.activeQuests) > 0 then
                                 local activeKey = npcKey .. "_active"
                                 local isActiveCollapsed = ExplorerMapGUI.collapsedQuestSections[activeKey]
-                                local activeSymbol = isActiveCollapsed and "[+]" or "[-]"
+                                local activeSymbol = isActiveCollapsed and "|cFF00FFFF[+]|r" or "|cFF00FFFF[-]|r"
                                 
                                 local activeButton = CreateClickableText(
                                     ExplorerMapGUI.content,
@@ -647,14 +631,12 @@ local function CreateGUI()
     bottomRight:SetHeight(256)
     bottomRight:SetPoint("TOPLEFT", frame, "TOPLEFT", 258, -257)
     
-    -- Portrait
     local portrait = frame:CreateTexture("ExplorerMapFramePortrait", "ARTWORK")
     portrait:SetTexture("Interface\\AddOns\\ExplorerMap\\icon")
     portrait:SetWidth(64)
     portrait:SetHeight(64)
     portrait:SetPoint("TOPLEFT", frame, "TOPLEFT", 9, -7)
     
-    -- Title
     local title = frame:CreateFontString("ExplorerMapNameText", "OVERLAY", "GameFontNormal")
     title:SetPoint("TOP", frame, "TOP", 0, -18)
     title:SetText("Explorer's Map")
@@ -678,7 +660,6 @@ local function CreateGUI()
     expandBtn:SetText("Expand All")
     expandBtn:SetScript("OnClick", function() ExpandAll() end)
     
-    -- Quest list
     local scrollFrame = CreateFrame("ScrollFrame", "ExplorerMapScrollFrame", frame, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 25, -85)
     scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -65, 90)
@@ -709,8 +690,6 @@ function ToggleGUI()
         ExplorerMapGUI.isVisible = true
     end
 end
-
-
 
 ---------------------------------------------------
 -- Quest Log Scanning 
@@ -787,6 +766,7 @@ local function ScanQuestLog()
     questLogSnapshot = currentQuests
     RefreshIconColors()
 end
+
 ---------------------------------------------------
 -- Data Management
 ---------------------------------------------------
@@ -843,69 +823,69 @@ end
 
 local function OnEvent()
     if event=="PLAYER_LOGIN" then
-    local key = UnitName("player").."-"..GetRealmName()
-    if not ExplorerMapDB then ExplorerMapDB = {} end
-    if not ExplorerMapDB[key] then ExplorerMapDB[key] = {} end
-    ExplorerMap.db = ExplorerMapDB[key]
-    
-    if not ExplorerMapDB[key].guiState then
-        ExplorerMapDB[key].guiState = {
-            collapsedZones = {},
-            collapsedSubzones = {},
-            collapsedNPCs = {},
-            collapsedQuestSections = {}
-        }
-    end
-    
-    ExplorerMapGUI.collapsedZones = ExplorerMapDB[key].guiState.collapsedZones
-    ExplorerMapGUI.collapsedSubzones = ExplorerMapDB[key].guiState.collapsedSubzones
-    ExplorerMapGUI.collapsedNPCs = ExplorerMapDB[key].guiState.collapsedNPCs
-    ExplorerMapGUI.collapsedQuestSections = ExplorerMapDB[key].guiState.collapsedQuestSections
+        local key = UnitName("player").."-"..GetRealmName()
+        if not ExplorerMapDB then ExplorerMapDB = {} end
+        if not ExplorerMapDB[key] then ExplorerMapDB[key] = {} end
+        ExplorerMap.db = ExplorerMapDB[key]
         
-elseif event=="QUEST_DETAIL" then
-    SetMapToCurrentZone()
-    local npcName = UnitName("target")
-    local questTitle = GetTitleText()
-    local x,y = GetPlayerMapPosition("player")
-    local zone = GetRealZoneText()
-    local subzone = GetSubZoneText()
-    local t = time()
-    
-    if npcName and questTitle and zone then
-        local questAlreadyInLog = false
-        local numQuests = GetNumQuestLogEntries()
-        for i=1,numQuests do
-            local title, level, _, isHeader = GetQuestLogTitle(i)
-            if title and not isHeader and title == questTitle then
-                questAlreadyInLog = true
-                break
-            end
+        if not ExplorerMapDB[key].guiState then
+            ExplorerMapDB[key].guiState = {
+                collapsedZones = {},
+                collapsedSubzones = {},
+                collapsedNPCs = {},
+                collapsedQuestSections = {}
+            }
         end
         
-        if not questAlreadyInLog then
-            if x == 0 and y == 0 then
-                SetMapToCurrentZone()
-                x, y = GetPlayerMapPosition("player")
+        ExplorerMapGUI.collapsedZones = ExplorerMapDB[key].guiState.collapsedZones
+        ExplorerMapGUI.collapsedSubzones = ExplorerMapDB[key].guiState.collapsedSubzones
+        ExplorerMapGUI.collapsedNPCs = ExplorerMapDB[key].guiState.collapsedNPCs
+        ExplorerMapGUI.collapsedQuestSections = ExplorerMapDB[key].guiState.collapsedQuestSections
+            
+    elseif event=="QUEST_DETAIL" then
+        SetMapToCurrentZone()
+        local npcName = UnitName("target")
+        local questTitle = GetTitleText()
+        local x,y = GetPlayerMapPosition("player")
+        local zone = GetRealZoneText()
+        local subzone = GetSubZoneText()
+        local t = time()
+        
+        if npcName and questTitle and zone then
+            local questAlreadyInLog = false
+            local numQuests = GetNumQuestLogEntries()
+            for i=1,numQuests do
+                local title, level, _, isHeader = GetQuestLogTitle(i)
+                if title and not isHeader and title == questTitle then
+                    questAlreadyInLog = true
+                    break
+                end
             end
             
-            if x > 0 and y > 0 then
-                local npc = CreateNPCIfNeeded(npcName,x,y,zone,subzone)
-                
-                local questLevel = nil
-                for i=1,numQuests do
-                    local title, level, _, isHeader = GetQuestLogTitle(i)
-                    if title and not isHeader and title == questTitle then
-                        questLevel = level
-                        break
-                    end
+            if not questAlreadyInLog then
+                if x == 0 and y == 0 then
+                    SetMapToCurrentZone()
+                    x, y = GetPlayerMapPosition("player")
                 end
                 
-                AddAvailableQuest(npc, questTitle, questLevel)
-                lastSavedNPC[npcName] = t
+                if x > 0 and y > 0 then
+                    local npc = CreateNPCIfNeeded(npcName,x,y,zone,subzone)
+                    
+                    local questLevel = nil
+                    for i=1,numQuests do
+                        local title, level, _, isHeader = GetQuestLogTitle(i)
+                        if title and not isHeader and title == questTitle then
+                            questLevel = level
+                            break
+                        end
+                    end
+                    
+                    AddAvailableQuest(npc, questTitle, questLevel)
+                    lastSavedNPC[npcName] = t
+                end
             end
         end
-    end
-        
+            
     elseif event=="QUEST_GREETING" then
         SetMapToCurrentZone()
         local npcName = UnitName("target")
@@ -914,18 +894,14 @@ elseif event=="QUEST_DETAIL" then
         local subzone = GetSubZoneText()
         local t = time()
         
-        --DEFAULT_CHAT_FRAME:AddMessage("DEBUG: QUEST_GREETING - NPC: "..(npcName or "nil")..", Coords: "..(x or 0)..",".. (y or 0)..", Zone: "..(zone or "nil"))
-        
         if npcName and zone and x > 0 and y > 0 and CanSaveNPC(npcName,t) then
             CreateNPCIfNeeded(npcName,x,y,zone,subzone)
-            --DEFAULT_CHAT_FRAME:AddMessage("DEBUG: Created NPC '"..npcName.."' at greeting")
             lastSavedNPC[npcName] = t
         end
         
     elseif event=="QUEST_COMPLETE" then
         local questTitle = GetTitleText()
         if questTitle then
-            --DEFAULT_CHAT_FRAME:AddMessage("DEBUG: Completing quest '"..questTitle.."'")
             for zone,npcs in pairs(ExplorerMap.db) do
                 for _, npc in pairs(npcs) do
                     CompleteQuest(npc, questTitle)
@@ -967,17 +943,17 @@ SlashCmdList["EXPLORER"] = function(msg)
     elseif msg=="refresh" then
         UpdateMapIcons()
         DEFAULT_CHAT_FRAME:AddMessage("ExplorerMap: Icons refreshed")
-elseif msg=="clear" then
-    local key = UnitName("player").."-"..GetRealmName()
-    if ExplorerMapDB then 
-        ExplorerMapDB[key] = {}
-    end
-    ExplorerMap.db = {}
-    ExplorerMapGUI.collapsedZones = {}
-    ExplorerMapGUI.collapsedSubzones = {}
-    ExplorerMapGUI.collapsedNPCs = {}
-    ExplorerMapGUI.collapsedQuestSections = {}
-    DEFAULT_CHAT_FRAME:AddMessage("ExplorerMap: All data cleared")
+    elseif msg=="clear" then
+        local key = UnitName("player").."-"..GetRealmName()
+        if ExplorerMapDB then 
+            ExplorerMapDB[key] = {}
+        end
+        ExplorerMap.db = {}
+        ExplorerMapGUI.collapsedZones = {}
+        ExplorerMapGUI.collapsedSubzones = {}
+        ExplorerMapGUI.collapsedNPCs = {}
+        ExplorerMapGUI.collapsedQuestSections = {}
+        DEFAULT_CHAT_FRAME:AddMessage("ExplorerMap: All data cleared")
     elseif msg=="sweep" then
         CleanOldData()
     else
