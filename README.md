@@ -11,9 +11,9 @@ Upon completion of all Active Quests from a Quest Giver (that has no remaining A
 ## COMMANDS
 You can use either **/explorer** or **/exp** to execute commands
 ```
-/explorer gui - Open the Quest Givers window--same as the minimap button
-/explorer refresh - Refreshes map's quest givers from database
-/explorer sweep - Removes NPCs with no available, active or completed quests
+/explorer gui - Open the EM window--same as the minimap button
+/explorer refresh - Refresh map's quest giver icons from database
+/explorer sweep - Remove obsolete quest givers and orphaned quests
 /explorer clear - *Removes ALL quest givers from database!*
 ```
 
