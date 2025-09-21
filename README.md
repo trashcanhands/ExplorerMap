@@ -14,7 +14,7 @@ You can use either **/explorer** or **/exp** to execute commands
 /explorer gui - Open the EM window--same as the minimap button
 /explorer refresh - Refresh map's quest giver icons from database
 /explorer sweep - Remove obsolete quest givers and orphaned quests
-/explorer clear - *Removes ALL quest givers from database!*
+/explorer clear - PURGE ALL ACTIVE/AVAILABLE QUESTS FROM DATABASE
 ```
 
 ## INSTALLATION
