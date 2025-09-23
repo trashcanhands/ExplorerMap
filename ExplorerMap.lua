@@ -133,6 +133,44 @@ local function GetNPCIconType(npc)
     end
 end
 
+local function FindAvailableIconPosition(originalX, originalY, worldMapWidth, worldMapHeight)
+    local iconSize = 20
+    local minDistance = 10
+    local maxAttempts = 8
+    local angleStep = 360 / maxAttempts
+    
+    for attempt = 0, maxAttempts do
+        local testX, testY
+        if attempt == 0 then
+            testX, testY = originalX * worldMapWidth, originalY * worldMapHeight
+        else
+            local angle = math.rad((attempt - 1) * angleStep)
+            local offsetDistance = minDistance
+            testX = originalX * worldMapWidth + math.cos(angle) * offsetDistance
+            testY = originalY * worldMapHeight + math.sin(angle) * offsetDistance
+        end
+        
+        local positionFree = true
+        for _, existingIcon in ipairs(ExplorerMap.mapIcons) do
+            if existingIcon and existingIcon:IsVisible() then
+                local existingX = existingIcon.worldX or 0
+                local existingY = existingIcon.worldY or 0
+                local distance = math.sqrt((testX - existingX)^2 + (testY - existingY)^2)
+                if distance < minDistance then
+                    positionFree = false
+                    break
+                end
+            end
+        end
+        
+        if positionFree then
+            return testX, testY
+        end
+    end
+    
+    return originalX * worldMapWidth, originalY * worldMapHeight
+end
+
 local function CreateMapIcon(npc)
     local iconType = GetNPCIconType(npc)
     if iconType=="hidden" then return nil end
@@ -146,7 +184,12 @@ local function CreateMapIcon(npc)
 
     local worldMapWidth = WorldMapButton:GetWidth()
     local worldMapHeight = WorldMapButton:GetHeight()
-    icon:SetPoint("CENTER", WorldMapButton, "TOPLEFT", npc.x*worldMapWidth, -npc.y*worldMapHeight)
+    
+    local finalX, finalY = FindAvailableIconPosition(npc.x, npc.y, worldMapWidth, worldMapHeight)
+    icon:SetPoint("CENTER", WorldMapButton, "TOPLEFT", finalX, -finalY)
+    
+    icon.worldX = finalX
+    icon.worldY = finalY
 
     local texture = icon:CreateTexture(nil,"OVERLAY")
     texture:SetAllPoints(icon)
